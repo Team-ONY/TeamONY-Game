@@ -60,6 +60,7 @@ public class ChatGPT : MonoBehaviour
         content = "あなたはネットワークのスペシャリストです。私にネットワークについての問題を出してください。また解答もつけてください"
     };
 
+    // APIキー(秘匿情報)
     private readonly string apiKey = "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";
     private List<MessageModel> communicationHistory = new List<MessageModel>();
 
@@ -96,27 +97,35 @@ public class ChatGPT : MonoBehaviour
             {"X-Slack-No-Retry", "1"}
         };
 
+        // Webリクエスト処理
         var request = new UnityWebRequest(apiUrl, "POST")
         {
             uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonOptions)),
             downloadHandler = new DownloadHandlerBuffer()
         };
 
+        // ヘッダーの設定
         foreach (var header in headers)
         {
             request.SetRequestHeader(header.Key, header.Value);
         }
 
+        // Webリクエストの送信
         var operation = request.SendWebRequest();
 
         operation.completed += _ =>
         {
+            // Webリクエスト処理のエラー処理
             if (operation.webRequest.result == UnityWebRequest.Result.ConnectionError ||
                 operation.webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
+                string errorCode = operation.webRequest.responseCode.ToString();
+                string errorMessage = operation.webRequest.error.ToString();
                 Debug.LogError(operation.webRequest.error);
+                chatGPTResponseText.text = errorMessage;
                 throw new Exception();
             }
+            // Webリクエスト処理の成功処理
             else
             {
                 var responseString = operation.webRequest.downloadHandler.text;
