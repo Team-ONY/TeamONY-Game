@@ -33,4 +33,9 @@ git commit -m "[Style]:********"
 ・Refac: 仕様に影響がないコード改善(リファクタ) 
 ```sh
 git commit -m "[Refac]:********"
+<<<<<<< HEAD
 ```
+
+##テスト
+
+あああ
