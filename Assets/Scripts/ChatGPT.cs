@@ -1,8 +1,3 @@
-// ChatGPTに問題生成させる(p1)
-// どちらか(true or false)を選んだかをAIに問い合わせる
-// 不正解だったときの解答用の文字を出力(p2)
-//
-//
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -53,29 +48,24 @@ public class ChatGPT : MonoBehaviour
     }
 
     public TMP_Text chatGPTResponseText;
-
-    private MessageModel assistantModel = new MessageModel
-    {
-        role = "system",
-        content = "あなたはネットワークのスペシャリストです。私にネットワークについての問題を出してください。また解答もつけてください"
-    };
-
-    // APIキー(秘匿情報)
-    private readonly string apiKey = "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";
+    public QuizManager quizManager; // QuizManagerスクリプトへの参照
+    private readonly string apiKey = "API key"; // APIキー
     private List<MessageModel> communicationHistory = new List<MessageModel>();
 
     void Start()
     {
         chatGPTResponseText = GameObject.Find("ChatGPTResponseText").GetComponent<TMP_Text>();
-        chatGPTResponseText.font = Resources.Load<TMP_FontAsset>("YourJapaneseFont"); // フォントを設定
+        //chatGPTResponseText.font = Resources.Load<TMP_FontAsset>("YourJapaneseFont"); // フォントを設定
 
-        communicationHistory.Add(assistantModel);
-        MessageSubmit("私にネットワークについての問題を正しいか正しくないかで答えられる問題を一つ出してください。");
+        // 問題生成用のプロンプト
+        string prompt = "ネットワークの問題を生成してください。問題文と正解（〇か×）を出力してください。";
+
+        // ChatGPTに問題を生成させる
+        MessageSubmit(prompt);
     }
 
     private void Communication(string newMessage, Action<MessageModel> result)
     {
-        Debug.Log(newMessage);
         communicationHistory.Add(new MessageModel()
         {
             role = "user",
@@ -131,8 +121,11 @@ public class ChatGPT : MonoBehaviour
                 var responseString = operation.webRequest.downloadHandler.text;
                 var responseObject = JsonUtility.FromJson<ChatGPTRecieveModel>(responseString);
                 communicationHistory.Add(responseObject.choices[0].message);
-                Debug.Log(responseObject.choices[0].message.content);
+                Debug.Log("Response: " + responseObject.choices[0].message.content);
                 chatGPTResponseText.text = responseObject.choices[0].message.content;
+
+                // QuizManagerに問題を送信
+                quizManager.ReceiveQuestion(responseObject.choices[0].message.content);
             }
             request.Dispose();
         };
