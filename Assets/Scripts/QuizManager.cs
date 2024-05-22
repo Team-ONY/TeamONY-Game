@@ -53,6 +53,8 @@ public class QuizManager : MonoBehaviour
     // ユーザーの回答をチェックするメソッド
     public void CheckAnswer(bool userAnswer)
     {
+        //これはなにをしているの
+        // 〇か×を文字列に変換
         string userAnswerText = userAnswer ? "〇" : "×";
         Debug.Log("User Answer: " + userAnswerText);
         Debug.Log("Correct Answer: " + correctAnswer);
