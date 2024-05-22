@@ -20,7 +20,7 @@ public class QuizManager : MonoBehaviour
     public void ReceiveQuestion(string question)
     {
         // デバッグログで受け取ったデータを確認
-        Debug.Log("Received Question: " + question);
+        Debug.Log("ChatGPTから受け取った問題文(分割なし): " + question);
 
         // 問題文と正解を分割
         string[] parts = question.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
@@ -36,17 +36,19 @@ public class QuizManager : MonoBehaviour
                 correctAnswer = answerPart.Substring("正解: ".Length).Trim();
 
                 // デバッグログでパースした問題文と正解を確認
-                Debug.Log("Parsed Question: " + questionText.text);
-                Debug.Log("Parsed Correct Answer: " + correctAnswer);
+                Debug.Log("分割した問題部: " + questionText.text);
+                Debug.Log("分割した問題文の解答部: " + correctAnswer);
             }
             else
             {
-                Debug.LogError("Received data is not in the expected format.");
+                // フォーマットが正しくない場合はエラーログを出力
+                Debug.LogError("Received data is not in the expected format.(受け取ったフォーマットが正しくない可能性があります。)");
             }
         }
         else
         {
-            Debug.LogError("Received data does not contain both question and answer.");
+            // 問題文と正解が含まれていない場合はエラーログを出力
+            Debug.LogError("Received data does not contain both question and answer.(受け取ったデータに問題文と正解が含まれていない可能性があります。)");
         }
     }
 
@@ -74,6 +76,7 @@ public class QuizManager : MonoBehaviour
     }
     private void GenerateNewQuestion()
     {
+        // 解答されたら同じ問題を出力させる
         string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を生成してください。問題文と正解(〇か×)を出力してください。";
         chatGPT.MessageSubmit(prompt);
     }
