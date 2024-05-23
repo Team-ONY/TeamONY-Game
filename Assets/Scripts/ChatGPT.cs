@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
@@ -19,6 +20,7 @@ public class ChatGPT : MonoBehaviour
     {
         public string model;
         public List<MessageModel> messages;
+        public bool stream;
     }
 
     [System.Serializable]
@@ -64,7 +66,8 @@ public class ChatGPT : MonoBehaviour
         MessageSubmit(prompt);
     }
 
-    private void Communication(string newMessage, Action<MessageModel> result)
+    //private void Communication(string newMessage, Action<MessageModel> result)
+    private IEnumerator Communication(string newMessage)
     {
         communicationHistory.Add(new MessageModel()
         {
@@ -77,16 +80,20 @@ public class ChatGPT : MonoBehaviour
             new CompletionRequestModel()
             {
                 model = "gpt-3.5-turbo",
-                messages = communicationHistory
+                messages = communicationHistory,
+                stream = true
             }, true);
 
         var headers = new Dictionary<string, string>
         {
             {"Authorization", "Bearer " + apiKey},
             {"Content-type", "application/json"},
-            {"X-Slack-No-Retry", "1"}
+            //{"X-Slack-No-Retry", "1"}
         };
 
+        // 追記
+        yield return StartCoroutine(SendRequest(apiUrl, jsonOptions, headers));
+        /*
         // Webリクエスト処理
         var request = new UnityWebRequest(apiUrl, "POST")
         {
@@ -129,13 +136,101 @@ public class ChatGPT : MonoBehaviour
             }
             request.Dispose();
         };
+        */
     }
 
+    //追記
+    private IEnumerator SendRequest(string url, string json, Dictionary<string, string> headers)
+    {
+        /*
+        var request = new UnityWebRequest(url, "POST")
+        {
+            uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json)),
+            downloadHandler = new DownloadHandlerBuffer()
+        };
+        foreach (var header in headers)
+        {
+            request.SetRequestHeader(header.Key, header.Value);
+        }
+        var operation = request.SendWebRequest();
+        while(!operation.isDone)
+        {
+            yield return null;
+        }
+        if (operation.webRequest.result == UnityWebRequest.Result.ConnectionError ||
+            operation.webRequest.result == UnityWebRequest.Result.ProtocolError)
+        {
+            string errorCode = operation.webRequest.responseCode.ToString();
+            string errorMessage = operation.webRequest.error.ToString();
+            Debug.LogError(operation.webRequest.error);
+            chatGPTResponseText.text = errorMessage;
+            throw new Exception();
+        }
+        else
+        {
+            var responseStream = operation.webRequest.downloadHandler.text;
+            StartCoroutine(DisplayText(responseStream));
+        }
+
+        request.Dispose();
+        */
+
+        // 追記
+        var request = new UnityWebRequest(url, "POST")
+        {
+            uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(json)),
+            downloadHandler = new DownloadHandlerBuffer()
+        };
+
+        foreach (var header in headers)
+        {
+            request.SetRequestHeader(header.Key, header.Value);
+        }
+
+        var operation = request.SendWebRequest();
+
+        while (!operation.isDone)
+        {
+            yield return null;
+        }
+
+        if (operation.webRequest.result == UnityWebRequest.Result.ConnectionError ||
+            operation.webRequest.result == UnityWebRequest.Result.ProtocolError)
+        {
+            string errorCode = operation.webRequest.responseCode.ToString();
+            string errorMessage = operation.webRequest.error.ToString();
+            Debug.LogError(operation.webRequest.error);
+            chatGPTResponseText.text = errorMessage;
+            throw new Exception(errorMessage);
+        }
+        else
+        {
+            var responseStream = operation.webRequest.downloadHandler.text;
+            yield return StartCoroutine(DisplayText(responseStream));
+        }
+
+        request.Dispose();
+    }
+
+    private IEnumerator DisplayText(string text){
+        chatGPTResponseText.text = "";
+        foreach(char c in text)
+        {
+            chatGPTResponseText.text += c;
+            yield return new WaitForSeconds(0.05f);
+        }
+        //完全なメッセージをQuizManagerに送信
+        quizManager.ReceiveQuestion(chatGPTResponseText.text);
+    }
     public void MessageSubmit(string sendMessage)
     {
+        //追記
+        /*
         Communication(sendMessage, (result) =>
         {
             Debug.Log(result.content);
         });
+        */
+        StartCoroutine(Communication(sendMessage));
     }
 }
