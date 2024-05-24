@@ -3,71 +3,128 @@ using TMPro;
 
 public class QuizManager : MonoBehaviour
 {
-    public ChatGPT chatGPT;
-    public TMP_Text questionText;
-    public TMP_Text countText;
-    private string correctAnswer;
-    private int correctCount = 0;
-    private bool gameOver = false;
+    public ChatGPT chatGPT; // ChatGPTスクリプトへの参照
+    public TMP_Text questionText; // 問題を表示するテキスト
+    public TMP_Text countText; // CountTextオブジェクトへの参照を追加
+    private string correctAnswer; // 正解を保持するための変数
+    private int correctCount = 0; // 正解数を保持する変数
 
     void Start()
     {
+        // ChatGPTに問題を生成させる
         chatGPT.MessageSubmit("ネットワークに関する、〇か×で答えられる二者択一形式の問題を生成してください。出力は以下の形式で行ってください。\n\n問題: ネットワークに関する問題文\n正解: 〇または×");
-        countText.text = "正解数: " + correctCount;
+        countText.text = "正解数: " + correctCount; // 正解数を表示
     }
 
+    // ChatGPTから問題を受け取るメソッド
     public void ReceiveQuestion(string question)
     {
-        if (!gameOver) // ゲームオーバーでない場合にのみ問題を受け取る
-        {
-            string[] parts = question.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 2)
-            {
-                string questionPart = parts[0].Trim();
-                string answerPart = parts[1].Trim();
+        // デバッグログで受け取ったデータを確認
+        Debug.Log("ChatGPTから受け取った問題文(分割なし): " + question);
 
-                if (questionPart.StartsWith("問題: ") && answerPart.StartsWith("正解: "))
-                {
-                    questionText.text = questionPart.Substring("問題: ".Length).Trim();
-                    correctAnswer = answerPart.Substring("正解: ".Length).Trim();
-                }
-                else
-                {
-                    Debug.LogError("Received data is not in the expected format.");
-                }
+        // 問題文と正解を分割
+        string[] parts = question.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+        {
+            // 問題文と正解のフォーマットを確認
+            string questionPart = parts[0].Trim();
+            string answerPart = parts[1].Trim();
+
+            if (questionPart.StartsWith("問題: ") && answerPart.StartsWith("正解: "))
+            {
+                questionText.text = questionPart.Substring("問題: ".Length).Trim();
+                correctAnswer = answerPart.Substring("正解: ".Length).Trim();
+
+                // デバッグログでパースした問題文と正解を確認
+                Debug.Log("分割した問題部: " + questionText.text);
+                Debug.Log("分割した問題文の解答部: " + correctAnswer);
             }
             else
             {
-                Debug.LogError("Received data does not contain both question and answer.");
+                // フォーマットが正しくない場合はエラーログを出力
+                Debug.LogError("Received data is not in the expected format.(受け取ったフォーマットが正しくない可能性があります。)");
             }
+        }
+        else
+        {
+            // 問題文と正解が含まれていない場合はエラーログを出力
+            Debug.LogError("Received data does not contain both question and answer.(受け取ったデータに問題文と正解が含まれていない可能性があります。)");
         }
     }
 
+    // ユーザーの回答をチェックするメソッド
     public void CheckAnswer(bool userAnswer)
     {
-        if (gameOver) return;
-
+        //これはなにをしているの
+        // 〇か×を文字列に変換
         string userAnswerText = userAnswer ? "〇" : "×";
-        Debug.Log("ユーザーの回答: " + userAnswerText);
-        Debug.Log("正解: " + correctAnswer);
+        Debug.Log("User Answer: " + userAnswerText);
+        Debug.Log("Correct Answer: " + correctAnswer);
+
         if (userAnswerText == correctAnswer)
         {
             Debug.Log("正解です！");
-            correctCount++;
-            countText.text = "正解数: " + correctCount.ToString();
+            correctCount++; // 正解数をインクリメント
+            countText.text = "正解数: " + correctCount.ToString(); // 正解数を更新
         }
         else
         {
             Debug.Log("不正解です。");
-            gameOver = true;
-            Debug.Log("ゲームオーバー");
-            questionText.text = "不正解です。ゲームオーバー";
+        }
+        Debug.Log(correctCount);
+        GenerateNewQuestion(); // 新しい問題を生成
+    }
+    private void GenerateNewQuestion()
+    {
+        // 解答されたら同じ問題を出力させる
+        string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を生成してください。問題文と正解(〇か×)を出力してください。";
+        chatGPT.MessageSubmit(prompt);
+    }
+}
+
+/*
+using UnityEngine;
+using TMPro;
+
+public class QuizManager : MonoBehaviour
+{
+    public ChatGPT chatGPT;
+    public TMP_Text questionText;
+    private string correctAnswer;
+    private int correctCount = 0; // 正解数を保持する変数
+
+    void Awake()
+    {
+        chatGPT = FindObjectOfType<ChatGPT>();
+    }
+
+    void Start()
+    {
+        GenerateNewQuestion();
+    }
+
+    public void ReceiveQuestion(string question)
+    {
+        // 問題文と正解を抽出する処理は省略
+    }
+
+    public void CheckAnswer(bool userAnswer)
+    {
+        string userAnswerText = userAnswer ? "〇" : "×";
+        Debug.Log("User Answer: " + userAnswerText);
+        Debug.Log("Correct Answer: " + correctAnswer);
+
+        if (userAnswerText == correctAnswer)
+        {
+            Debug.Log("正解です！");
+            correctCount++; // 正解数をインクリメント
+        }
+        else
+        {
+            Debug.Log("不正解です。");
         }
 
-        if (!gameOver) // ゲームオーバーでない場合のみ新しい問題を生成する
-        {
-            GenerateNewQuestion();
-        }
+        GenerateNewQuestion(); // 新しい問題を生成
     }
 
     private void GenerateNewQuestion()
@@ -76,3 +133,4 @@ public class QuizManager : MonoBehaviour
         chatGPT.MessageSubmit(prompt);
     }
 }
+*/
