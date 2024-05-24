@@ -5,6 +5,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
+//
 
 public class ChatGPT : MonoBehaviour
 {
@@ -51,7 +52,7 @@ public class ChatGPT : MonoBehaviour
 
     public TMP_Text chatGPTResponseText;
     public QuizManager quizManager; // QuizManagerスクリプトへの参照
-    private readonly string apiKey = "API key"; // APIキー
+    private readonly string apiKey = ""; // APIキー
     private List<MessageModel> communicationHistory = new List<MessageModel>();
 
     void Start()
