@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class QuizManager : MonoBehaviour
 {
@@ -62,6 +63,7 @@ public class QuizManager : MonoBehaviour
             gameOver = true;
             Debug.Log("ゲームオーバー");
             questionText.text = "不正解です。ゲームオーバー";
+            SceneManager.LoadScene("GameOverScene");
         }
 
         if (!gameOver) // ゲームオーバーでない場合のみ新しい問題を生成する
