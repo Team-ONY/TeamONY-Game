@@ -5,7 +5,7 @@ public class SceneController : MonoBehaviour
 {
     public void LoadTitleScene()
     {
-        SceneManager.LoadScene("Title");
+        SceneManager.LoadScene("Start");
     }
 
     public void LoadGameScene()
