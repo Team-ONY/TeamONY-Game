@@ -131,6 +131,7 @@ public class ChatGPT : MonoBehaviour
         };
     }
 
+    
     public void MessageSubmit(string sendMessage)
     {
         Communication(sendMessage, (result) =>
