@@ -13,7 +13,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
-
+//
 public class ChatGPT : MonoBehaviour
 {
     [System.Serializable]
