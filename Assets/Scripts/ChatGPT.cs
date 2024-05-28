@@ -75,6 +75,8 @@ public class ChatGPT : MonoBehaviour
             content = newMessage
         });
 
+
+        //GOで開いたAPIのURLを指定
         var apiUrl = "http://localhost:3000/api/openai"; // バックエンドのURLに変更
         var jsonOptions = JsonUtility.ToJson(
             new CompletionRequestModel()
