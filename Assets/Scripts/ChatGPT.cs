@@ -13,7 +13,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using TMPro;
-//
+
 public class ChatGPT : MonoBehaviour
 {
     [System.Serializable]
@@ -58,18 +58,12 @@ public class ChatGPT : MonoBehaviour
 
     public TMP_Text chatGPTResponseText;
     public QuizManager quizManager; // QuizManagerスクリプトへの参照
-    private readonly string apiKey = ""; // APIキー
     private List<MessageModel> communicationHistory = new List<MessageModel>();
 
     void Start()
     {
         chatGPTResponseText = GameObject.Find("ChatGPTResponseText").GetComponent<TMP_Text>();
-        //chatGPTResponseText.font = Resources.Load<TMP_FontAsset>("YourJapaneseFont"); // フォントを設定
-
-        // 問題生成用のプロンプト
         string prompt = "ネットワークの問題を生成してください。問題文と正解（〇か×）を出力してください。";
-
-        // ChatGPTに問題を生成させる
         MessageSubmit(prompt);
     }
 
@@ -81,7 +75,7 @@ public class ChatGPT : MonoBehaviour
             content = newMessage
         });
 
-        var apiUrl = "https://api.openai.com/v1/chat/completions";
+        var apiUrl = "http://localhost:3000/api/openai"; // バックエンドのURLに変更
         var jsonOptions = JsonUtility.ToJson(
             new CompletionRequestModel()
             {
@@ -91,30 +85,24 @@ public class ChatGPT : MonoBehaviour
 
         var headers = new Dictionary<string, string>
         {
-            {"Authorization", "Bearer " + apiKey},
             {"Content-type", "application/json"},
-            {"X-Slack-No-Retry", "1"}
         };
 
-        // Webリクエスト処理
         var request = new UnityWebRequest(apiUrl, "POST")
         {
             uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonOptions)),
             downloadHandler = new DownloadHandlerBuffer()
         };
 
-        // ヘッダーの設定
         foreach (var header in headers)
         {
             request.SetRequestHeader(header.Key, header.Value);
         }
 
-        // Webリクエストの送信
         var operation = request.SendWebRequest();
 
         operation.completed += _ =>
         {
-            // Webリクエスト処理のエラー処理
             if (operation.webRequest.result == UnityWebRequest.Result.ConnectionError ||
                 operation.webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
@@ -124,7 +112,6 @@ public class ChatGPT : MonoBehaviour
                 chatGPTResponseText.text = errorMessage;
                 throw new Exception();
             }
-            // Webリクエスト処理の成功処理
             else
             {
                 var responseString = operation.webRequest.downloadHandler.text;
@@ -132,15 +119,12 @@ public class ChatGPT : MonoBehaviour
                 communicationHistory.Add(responseObject.choices[0].message);
                 Debug.Log("Response: " + responseObject.choices[0].message.content);
                 chatGPTResponseText.text = responseObject.choices[0].message.content;
-
-                // QuizManagerに問題を送信
                 quizManager.ReceiveQuestion(responseObject.choices[0].message.content);
             }
             request.Dispose();
         };
     }
 
-    
     public void MessageSubmit(string sendMessage)
     {
         Communication(sendMessage, (result) =>
