@@ -10,7 +10,6 @@ public class SceneController : MonoBehaviour
     public void LoadExplainScene()
     {
         SceneManager.LoadScene("GameManualScene");
-    
     }
     public void LoadGameScene()
     {

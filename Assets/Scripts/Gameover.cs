@@ -4,13 +4,12 @@ using UnityEngine.SceneManagement;
 
 public class GameOverManager : MonoBehaviour
 {
-    public Text gameOverText;      // "ゲームオーバー" テキスト
-    public Button restartButton;   // "スタート画面に戻る" ボタン
-    public Text scoreText;         // 正解数を表示するテキスト
+    public Text gameOverText;      // "繧ｲ繝ｼ繝繧ｪ繝ｼ繝舌�" 繝�く繧ｹ繝
+    public Button restartButton;   // "繧ｹ繧ｿ繝ｼ繝育判髱｢縺ｫ謌ｻ繧" 繝懊ち繝ｳ
+    public Text scoreText;         // 豁｣隗｣謨ｰ繧定｡ｨ遉ｺ縺吶ｋ繝�く繧ｹ繝
 
     void Start()
     {
-        // UI要素を表示する
         gameOverText.gameObject.SetActive(true);
         restartButton.gameObject.SetActive(true);
         scoreText.gameObject.SetActive(true);
