@@ -4,25 +4,24 @@ using UnityEngine.SceneManagement;
 
 public class GameOverManager : MonoBehaviour
 {
-    public Text gameOverText;      // "ƒQ[ƒ€ƒI[ƒo[" ƒeƒLƒXƒg
-    public Button restartButton;   // "ƒXƒ^[ƒg‰æ–Ê‚É–ß‚é" ƒ{ƒ^ƒ“
-    public Text scoreText;         // ³‰ğ”‚ğ•\¦‚·‚éƒeƒLƒXƒg
+    public Text gameOverText;      // "ç¹§ï½²ç¹ï½¼ç¹ç¹§ï½ªç¹ï½¼ç¹èˆŒï¿½" ç¹ï¿½ãç¹§ï½¹ç¹
+    public Button restartButton;   // "ç¹§ï½¹ç¹§ï½¿ç¹ï½¼ç¹è‚²åˆ¤é«±ï½¢ç¸ºï½«è¬Œï½»ç¹§" ç¹æ‡Šã¡ç¹ï½³
+    public Text scoreText;         // è±ï½£éš—ï½£è¬¨ï½°ç¹§å®šï½¡ï½¨é‰ï½ºç¸ºå¶ï½‹ç¹ï¿½ãç¹§ï½¹ç¹
 
     void Start()
     {
-        // UI—v‘f‚ğ•\¦‚·‚é
         gameOverText.gameObject.SetActive(true);
         restartButton.gameObject.SetActive(true);
         scoreText.gameObject.SetActive(true);
 
-        // ƒXƒRƒA‚ğŠO•”‚©‚çó‚¯æ‚é (—áFPlayerPrefs‚©‚çæ“¾)
+        // ã‚¹ã‚³ã‚¢ã‚’å¤–éƒ¨ã‹ã‚‰å—ã‘å–ã‚‹ (ä¾‹ï¼šPlayerPrefsã‹ã‚‰å–å¾—)
         int score = PlayerPrefs.GetInt("Score", 0);
         scoreText.text = "Score: " + score;
     }
 
     public void OnRestartButton()
     {
-        // ƒXƒ^[ƒg‰æ–Ê‚É–ß‚éˆ—iƒXƒ^[ƒg‰æ–Ê‚ÌƒV[ƒ“–¼‚ğw’èj
+        // ã‚¹ã‚¿ãƒ¼ãƒˆç”»é¢ã«æˆ»ã‚‹å‡¦ç†ï¼ˆã‚¹ã‚¿ãƒ¼ãƒˆç”»é¢ã®ã‚·ãƒ¼ãƒ³åã‚’æŒ‡å®šï¼‰
         SceneManager.LoadScene("StartScene");
     }
 }

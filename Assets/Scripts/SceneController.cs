@@ -7,7 +7,10 @@ public class SceneController : MonoBehaviour
     {
         SceneManager.LoadScene("Start");
     }
-
+    public void LoadExplainScene()
+    {
+        SceneManager.LoadScene("GameManualScene");
+    }
     public void LoadGameScene()
     {
         SceneManager.LoadScene("Main");
