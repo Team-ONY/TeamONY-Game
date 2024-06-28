@@ -55,7 +55,7 @@ public class QuizManager : MonoBehaviour
         Debug.Log("ユーザーの回答: " + userAnswerText);
         Debug.Log("正解: " + correctAnswer);
         Debug.Log("解説: " + currentExplanation);
-        
+
         if (userAnswerText == correctAnswer)
         {
             Debug.Log("正解です！");
