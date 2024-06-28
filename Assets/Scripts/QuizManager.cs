@@ -6,6 +6,7 @@ public class QuizManager : MonoBehaviour
 {
     public ChatGPT chatGPT;
     public TMP_Text questionText;
+    private string currentExplanation;
     public TMP_Text countText;
     private string correctAnswer;
     private int correctCount = 0;
