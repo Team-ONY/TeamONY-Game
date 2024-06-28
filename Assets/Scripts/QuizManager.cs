@@ -23,15 +23,17 @@ public class QuizManager : MonoBehaviour
         if (!gameOver) // ゲームオーバーでない場合にのみ問題を受け取る
         {
             string[] parts = question.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 2)
+            if (parts.Length >= 3)
             {
                 string questionPart = parts[0].Trim();
                 string answerPart = parts[1].Trim();
+                string explanationPart = parts[2].Trim();
 
-                if (questionPart.StartsWith("問題: ") && answerPart.StartsWith("正解: "))
+                if (questionPart.StartsWith("問題: ") && answerPart.StartsWith("正解: ") && explanationPart.StartsWith("解説: "))
                 {
                     questionText.text = questionPart.Substring("問題: ".Length).Trim();
                     correctAnswer = answerPart.Substring("正解: ".Length).Trim();
+                    currentExplanation = explanationPart.Substring("解説: ".Length).Trim();
                 }
                 else
                 {
@@ -65,6 +67,14 @@ public class QuizManager : MonoBehaviour
             Debug.Log("ゲームオーバー");
             questionText.text = "不正解です。ゲームオーバー";
             SceneManager.LoadScene("GameOverScene");
+
+            PlayerPrefs.SetString("LastExplanation", currentExplanation);
+            PlayerPrefs.SetString("LastQuestion", questionText.text);
+            PlayerPrefs.SetString("LastCorrectAnswer", correctAnswer);
+            PlayerPrefs.SetInt("CorrectCount", correctCount);
+            PlayerPrefs.Save();
+
+            //SceneManager.LoadScene("GameOverScene");
         }
 
         if (!gameOver) // ゲームオーバーでない場合のみ新しい問題を生成する
@@ -75,7 +85,7 @@ public class QuizManager : MonoBehaviour
 
     private void GenerateNewQuestion()
     {
-        string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を生成してください。問題文と正解(〇か×)を出力してください。";
+        string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を生成してください。問題文、正解(〇か×)、および解説を出力してください。";
         chatGPT.MessageSubmit(prompt);
     }
 }
