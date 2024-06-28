@@ -66,7 +66,6 @@ public class QuizManager : MonoBehaviour
             gameOver = true;
             Debug.Log("ゲームオーバー");
             questionText.text = "不正解です。ゲームオーバー";
-            SceneManager.LoadScene("GameOverScene");
 
             PlayerPrefs.SetString("LastExplanation", currentExplanation);
             PlayerPrefs.SetString("LastQuestion", questionText.text);
@@ -74,7 +73,7 @@ public class QuizManager : MonoBehaviour
             PlayerPrefs.SetInt("CorrectCount", correctCount);
             PlayerPrefs.Save();
 
-            //SceneManager.LoadScene("GameOverScene");
+            SceneManager.LoadScene("GameOverScene");
         }
 
         if (!gameOver) // ゲームオーバーでない場合のみ新しい問題を生成する
