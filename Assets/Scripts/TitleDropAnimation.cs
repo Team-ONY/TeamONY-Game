@@ -4,17 +4,21 @@ using System.Collections;
 
 public class TitleDropAnimation : MonoBehaviour
 {
-    public float dropDuration = 2f;  // アニメーションの持続時間
-    public float startYPosition = 500f;  // 開始Y位置（画面上部）
+    public float dropDuration = 6f;  // アニメーションの持続時間（秒）
+    public float startYPosition = 1080f;  // 開始Y位置（画面上部外）
     public float endYPosition = 0f;  // 終了Y位置（画面中央）
-    public AnimationCurve dropCurve = AnimationCurve.EaseInOut(0, 0, 1, 1);  // アニメーションカーブ
+    public AnimationCurve dropCurve = new AnimationCurve(
+        new Keyframe(0, 0, 0, 0),
+        new Keyframe(0.3f, 0.05f, 0.1f, 0.1f),
+        new Keyframe(0.7f, 0.2f, 0.5f, 0.5f),
+        new Keyframe(1, 1, 2, 0)
+    );  // カスタムアニメーションカーブ
     public Image titleImage;  // タイトル用のImage component
 
     private RectTransform rectTransform;
 
     void Start()
     {
-        // Image componentが設定されていない場合、自動的に取得
         if (titleImage == null)
         {
             titleImage = GetComponent<Image>();
@@ -27,11 +31,17 @@ public class TitleDropAnimation : MonoBehaviour
         }
 
         rectTransform = titleImage.rectTransform;
-        rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, startYPosition);
-        StartCoroutine(DropTitle());
+        
+        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        
+        rectTransform.anchoredPosition = new Vector2(0, startYPosition);
+        
+        StartCoroutine(SlowDropTitle());
     }
 
-    IEnumerator DropTitle()
+    IEnumerator SlowDropTitle()
     {
         float elapsedTime = 0f;
 
@@ -47,4 +57,5 @@ public class TitleDropAnimation : MonoBehaviour
 
         rectTransform.anchoredPosition = new Vector2(rectTransform.anchoredPosition.x, endYPosition);
     }
+    
 }
