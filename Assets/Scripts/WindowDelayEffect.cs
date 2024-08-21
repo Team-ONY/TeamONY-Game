@@ -3,18 +3,28 @@ using UnityEngine.SceneManagement;
 using System.Collections;
 
 public class WindowDelayEffect : MonoBehaviour
-{
-    public GameObject targetUI;  // •\¦‚µ‚½‚¢UIƒIƒuƒWƒFƒNƒg
-    public float delay = 2.0f;   // •\¦‚Ü‚Å‚Ì’x‰„ŠÔ
+{       
+    public GameObject uiObject;  // è¡¨ç¤ºã™ã‚‹UIã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+    public float delay = 2.0f;   // è¡¨ç¤ºã¾ã§ã®é…å»¶æ™‚é–“
 
-    void Awake()
+    void OnEnable()
+    {
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnDisable()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
         StartCoroutine(ShowUIAfterDelay());
     }
 
     IEnumerator ShowUIAfterDelay()
     {
-        yield return new WaitForSeconds(delay); // ’x‰„
-        targetUI.SetActive(true); // UI‚ğ•\¦
+        yield return new WaitForSeconds(delay); // é…å»¶
+        uiObject.SetActive(true); // UIã‚’è¡¨ç¤º
     }
 }

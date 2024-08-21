@@ -246,6 +246,10 @@ PrefabInstance:
       propertyPath: m_AnchoredPosition.y
       value: -0.0000071526
       objectReference: {fileID: 0}
+    - target: {fileID: 826445532826879248, guid: 55e2bc1fe2be42c4f978317cf9219588, type: 3}
+      propertyPath: m_CullTransparentMesh
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1247728213294821941, guid: 55e2bc1fe2be42c4f978317cf9219588, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -342,9 +346,17 @@ PrefabInstance:
       propertyPath: m_fontStyle
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6496266419672015858, guid: 55e2bc1fe2be42c4f978317cf9219588, type: 3}
+      propertyPath: m_Colors.m_NormalColor.a
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7583072906950981634, guid: 55e2bc1fe2be42c4f978317cf9219588, type: 3}
       propertyPath: m_Name
       value: PopupWindow
+      objectReference: {fileID: 0}
+    - target: {fileID: 7583072906950981634, guid: 55e2bc1fe2be42c4f978317cf9219588, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7789802188600674009, guid: 55e2bc1fe2be42c4f978317cf9219588, type: 3}
       propertyPath: m_AnchoredPosition.x
