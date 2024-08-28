@@ -5,12 +5,18 @@ public class UIManager : MonoBehaviour
     public PopupWindowAnimation popupWindow;
     public GameObject titleLogo;
     public GameObject startButton;
+    public GameObject CloseButton;
+    public GameObject MaximiseButton;
+    public GameObject MinimiseButton;
 
     void Start()
     {
         // タイトルロゴとスタートボタンを初期状態で非表示にする
         titleLogo.SetActive(false);
         startButton.SetActive(false);
+        CloseButton.SetActive(false);
+        MaximiseButton.SetActive(false);
+        MinimiseButton.SetActive(false);
 
         // ポップアップウィンドウのアニメーションを開始
         popupWindow.StartAnimation(OnPopupAnimationComplete);
@@ -29,6 +35,9 @@ public class UIManager : MonoBehaviour
         }
         
         startButton.SetActive(true);
+        CloseButton.SetActive(true);
+        MaximiseButton.SetActive(true);
+        MinimiseButton.SetActive(true);
 
         
     }

@@ -7,7 +7,7 @@ public class TitleLogoAnimation : MonoBehaviour
     public AnimationCurve animationCurve;
 
     // 終了位置を指定するための変数を追加
-    public Vector2 endPosition = new Vector2(4f, 223.5f);
+    public Vector2 endPosition = new Vector2(5.3406e-05f, 183.0f);
 
     private RectTransform rectTransform;
     private Vector2 startPosition;
