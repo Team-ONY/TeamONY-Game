@@ -1,12 +1,3 @@
-/*
-░█████╗░███╗░░██╗██╗░░░██╗  ░██████╗░░█████╗░███╗░░░███╗███████╗
-██╔══██╗████╗░██║╚██╗░██╔╝  ██╔════╝░██╔══██╗████╗░████║██╔════╝
-██║░░██║██╔██╗██║░╚████╔╝░  ██║░░██╗░███████║██╔████╔██║█████╗░░
-██║░░██║██║╚████║░░╚██╔╝░░  ██║░░╚██╗██╔══██║██║╚██╔╝██║██╔══╝░░
-╚█████╔╝██║░╚███║░░░██║░░░  ╚██████╔╝██║░░██║██║░╚═╝░██║███████╗
-░╚════╝░╚═╝░░╚══╝░░░╚═╝░░░  ░╚═════╝░╚═╝░░╚═╝╚═╝░░░░░╚═╝╚══════╝
-*/
-
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -57,38 +48,41 @@ public class ChatGPT : MonoBehaviour
     }
 
     public TMP_Text chatGPTResponseText;
-    public QuizManager quizManager; // QuizManagerスクリプトへの参照
+    public QuizManager quizManager;
     private List<MessageModel> communicationHistory = new List<MessageModel>();
 
     void Start()
     {
         chatGPTResponseText = GameObject.Find("ChatGPTResponseText").GetComponent<TMP_Text>();
-        string prompt = "ネットワークの問題を生成してください。問題文と正解（〇か×）を出力してください。";
+        string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を1つだけ生成してください。複数の問題は絶対に生成しないでください。以下の形式で厳密に出力してください：\n\n問題: [ここに1つの問題文を入れてください]\n正解: [〇または×]\n解説: [ここに解説を入れてください]";
         MessageSubmit(prompt);
     }
 
     private void Communication(string newMessage, Action<MessageModel> result)
     {
-        communicationHistory.Add(new MessageModel()
+        var messages = new List<MessageModel>
+    {
+        new MessageModel
         {
             role = "user",
             content = newMessage
-        });
+        }
+    };
 
-
-        //GOで開いたAPIのURLを指定
-        var apiUrl = "http://localhost:3000/api/openai"; // バックエンドのURLに変更
-        var jsonOptions = JsonUtility.ToJson(
-            new CompletionRequestModel()
-            {
-                model = "gpt-3.5-turbo",
-                messages = communicationHistory,
-            }, true);
-
-        var headers = new Dictionary<string, string>
+        var requestBody = new CompletionRequestModel
         {
-            {"Content-type", "application/json"},
+            model = "gpt-3.5-turbo",
+            messages = messages
         };
+
+        var jsonOptions = JsonUtility.ToJson(requestBody);
+        Debug.Log("Sending JSON: " + jsonOptions);
+
+        var apiUrl = "https://1633-60-34-77-61.ngrok-free.app/api/openai"; // ngrokのURLを適切に変更してください
+        var headers = new Dictionary<string, string>
+    {
+        {"Content-type", "application/json"},
+    };
 
         var request = new UnityWebRequest(apiUrl, "POST")
         {
@@ -105,23 +99,45 @@ public class ChatGPT : MonoBehaviour
 
         operation.completed += _ =>
         {
+            Debug.Log($"Response Code: {operation.webRequest.responseCode}");
+            Debug.Log($"Response Headers: {operation.webRequest.GetResponseHeaders()}");
+            Debug.Log($"Response Body: {operation.webRequest.downloadHandler.text}");
+
             if (operation.webRequest.result == UnityWebRequest.Result.ConnectionError ||
                 operation.webRequest.result == UnityWebRequest.Result.ProtocolError)
             {
                 string errorCode = operation.webRequest.responseCode.ToString();
                 string errorMessage = operation.webRequest.error.ToString();
-                Debug.LogError(operation.webRequest.error);
-                chatGPTResponseText.text = errorMessage;
-                throw new Exception();
+                Debug.LogError($"API Error: Code {errorCode}, Message: {errorMessage}");
+                Debug.LogError($"Response Body: {operation.webRequest.downloadHandler.text}");
+                chatGPTResponseText.text = $"Error: {errorMessage}";
             }
             else
             {
                 var responseString = operation.webRequest.downloadHandler.text;
-                var responseObject = JsonUtility.FromJson<ChatGPTRecieveModel>(responseString);
-                communicationHistory.Add(responseObject.choices[0].message);
-                Debug.Log("Response: " + responseObject.choices[0].message.content);
-                chatGPTResponseText.text = responseObject.choices[0].message.content;
-                quizManager.ReceiveQuestion(responseObject.choices[0].message.content);
+                try
+                {
+                    var responseObject = JsonUtility.FromJson<ChatGPTRecieveModel>(responseString);
+                    if (responseObject.choices != null && responseObject.choices.Length > 0 && responseObject.choices[0].message != null)
+                    {
+                        var responseMessage = responseObject.choices[0].message;
+                        Debug.Log("Response: " + responseMessage.content);
+                        chatGPTResponseText.text = responseMessage.content;
+                        quizManager.ReceiveQuestion(responseMessage.content);
+                        result(responseMessage);
+                    }
+                    else
+                    {
+                        Debug.LogError("Invalid response structure");
+                        chatGPTResponseText.text = "Error: Invalid response structure";
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError($"Failed to parse response: {e.Message}");
+                    Debug.LogError($"Response string: {responseString}");
+                    chatGPTResponseText.text = "Error: Failed to parse response";
+                }
             }
             request.Dispose();
         };

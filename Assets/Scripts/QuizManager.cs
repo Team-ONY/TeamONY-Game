@@ -10,6 +10,8 @@ public class QuizManager : MonoBehaviour
     private string correctAnswer;
     private int correctCount = 0;
     private bool gameOver = false;
+    private string currentQuestion;
+    private string currentExplanation;
 
     void Start()
     {
@@ -19,27 +21,38 @@ public class QuizManager : MonoBehaviour
 
     public void ReceiveQuestion(string question)
     {
-        if (!gameOver) // ゲームオーバーでない場合にのみ問題を受け取る
+        if (!gameOver)
         {
-            string[] parts = question.Split(new[] { '\n' }, System.StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length >= 2)
-            {
-                string questionPart = parts[0].Trim();
-                string answerPart = parts[1].Trim();
+            string[] parts = question.Split('\n');
 
-                if (questionPart.StartsWith("問題: ") && answerPart.StartsWith("正解: "))
-                {
-                    questionText.text = questionPart.Substring("問題: ".Length).Trim();
-                    correctAnswer = answerPart.Substring("正解: ".Length).Trim();
-                }
-                else
-                {
-                    Debug.LogError("Received data is not in the expected format.");
-                }
+            string questionPart = "";
+            string answerPart = "";
+            string explanationPart = "";
+
+            foreach (string part in parts)
+            {
+                if (part.StartsWith("問題:"))
+                    questionPart = part.Substring("問題:".Length).Trim();
+                else if (part.StartsWith("正解:"))
+                    answerPart = part.Substring("正解:".Length).Trim();
+                else if (part.StartsWith("解説:"))
+                    explanationPart = part.Substring("解説:".Length).Trim();
+            }
+
+            if (!string.IsNullOrEmpty(questionPart) && !string.IsNullOrEmpty(answerPart))
+            {
+                currentQuestion = questionPart;
+                questionText.text = currentQuestion;
+                correctAnswer = answerPart;
+                currentExplanation = explanationPart;
+
+                Debug.Log("Question parsed: " + currentQuestion);
+                Debug.Log("Answer parsed: " + correctAnswer);
+                Debug.Log("Explanation parsed: " + currentExplanation);
             }
             else
             {
-                Debug.LogError("Received data does not contain both question and answer.");
+                Debug.LogError("Failed to parse question: " + question);
             }
         }
     }
@@ -55,6 +68,7 @@ public class QuizManager : MonoBehaviour
         {
             Debug.Log("正解です！");
             correctCount++;
+            GameData.CorrectAnswers = correctCount;
             countText.text = "正解数: " + correctCount.ToString();
         }
         else
@@ -63,7 +77,17 @@ public class QuizManager : MonoBehaviour
             gameOver = true;
             Debug.Log("ゲームオーバー");
             questionText.text = "不正解です。ゲームオーバー";
-            SceneManager.LoadScene("GameOverScene");
+
+            // データを保存
+            GameData.LastQuestion = currentQuestion;
+            GameData.LastCorrectAnswer = correctAnswer;
+            GameData.LastExplanation = currentExplanation;
+
+            Debug.Log("Last Question: " + GameData.LastQuestion);
+            Debug.Log("Last Correct Answer: " + GameData.LastCorrectAnswer);
+            Debug.Log("Last Explanation: " + GameData.LastExplanation);
+
+            SceneManager.LoadScene("GameOver");
         }
 
         if (!gameOver) // ゲームオーバーでない場合のみ新しい問題を生成する
@@ -74,7 +98,8 @@ public class QuizManager : MonoBehaviour
 
     private void GenerateNewQuestion()
     {
-        string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を生成してください。問題文と正解(〇か×)を出力してください。";
+        Debug.Log("GenerateNewQuestion called");
+        string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を1つだけ生成してください。複数の問題は絶対に生成しないでください。以下の形式で厳密に出力してください：\n\n問題: [ここに1つの問題文を入れてください]\n正解: [〇または×]\n解説: [ここに解説を入れてください]";
         chatGPT.MessageSubmit(prompt);
     }
 }
