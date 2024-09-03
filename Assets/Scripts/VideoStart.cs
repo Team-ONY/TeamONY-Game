@@ -10,7 +10,7 @@ public class VideoEndTransition : MonoBehaviour
     {
         // Get the VideoPlayer component
         videoPlayer = GetComponent<VideoPlayer>();
-        videoPlayer.url = Application.dataPath + "/Movie/レコーディング 2024-06-17 140710.mp4";
+        videoPlayer.url = Application.dataPath + "/Movie/BootScreen.mp4";
         // Play the video
         videoPlayer.Play();
     }
