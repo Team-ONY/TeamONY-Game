@@ -18,7 +18,7 @@ public class SceneController : MonoBehaviour
     }
     public void LoadGameScene()
     {
-        fade.FadeIn(1f,() => SceneManager.LoadScene("Main"));
+        fade.FadeIn(3f, () => SceneManager.LoadScene("Main"));
     }
 
     public void LoadResultScene()
