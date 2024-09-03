@@ -78,7 +78,7 @@ public class ChatGPT : MonoBehaviour
         var jsonOptions = JsonUtility.ToJson(requestBody);
         Debug.Log("Sending JSON: " + jsonOptions);
 
-        var apiUrl = "https://1633-60-34-77-61.ngrok-free.app/api/openai"; // ngrokのURLを適切に変更してください
+        var apiUrl = "https://045a-60-34-77-61.ngrok-free.app/api/openai"; // ngrokのURLを適切に変更してください
         var headers = new Dictionary<string, string>
     {
         {"Content-type", "application/json"},

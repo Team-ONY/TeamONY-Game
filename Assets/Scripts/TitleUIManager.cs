@@ -1,13 +1,12 @@
 using UnityEngine;
 
-public class UIManager : MonoBehaviour
+public class TitleUIManager : MonoBehaviour
 {
     public PopupWindowAnimation popupWindow;
     public GameObject titleLogo;
     public GameObject startButton;
     public GameObject CloseButton;
-    public GameObject MaximiseButton;
-    public GameObject MinimiseButton;
+    public GameObject HelpButton;
 
     void Start()
     {
@@ -15,8 +14,7 @@ public class UIManager : MonoBehaviour
         titleLogo.SetActive(false);
         startButton.SetActive(false);
         CloseButton.SetActive(false);
-        MaximiseButton.SetActive(false);
-        MinimiseButton.SetActive(false);
+        HelpButton.SetActive(false);
 
         // ポップアップウィンドウのアニメーションを開始
         popupWindow.StartAnimation(OnPopupAnimationComplete);
@@ -27,18 +25,15 @@ public class UIManager : MonoBehaviour
     {
         // タイトルロゴとスタートボタンを表示
         titleLogo.SetActive(true);
+        startButton.SetActive(true);
+        CloseButton.SetActive(true);
+        HelpButton.SetActive(true);
+
         // タイトルロゴのアニメーションを開始（必要に応じて）
         TitleLogoAnimation titleLogoAnim = titleLogo.GetComponent<TitleLogoAnimation>();
         if (titleLogoAnim != null)
         {
             titleLogoAnim.StartLogoAnimation();
         }
-        
-        startButton.SetActive(true);
-        CloseButton.SetActive(true);
-        MaximiseButton.SetActive(true);
-        MinimiseButton.SetActive(true);
-
-        
     }
 }

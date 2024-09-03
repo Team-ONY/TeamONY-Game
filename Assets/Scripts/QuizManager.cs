@@ -12,6 +12,7 @@ public class QuizManager : MonoBehaviour
     private bool gameOver = false;
     private string currentQuestion;
     private string currentExplanation;
+    public TimeCounter timeCounter;
 
     void Start()
     {
@@ -101,5 +102,6 @@ public class QuizManager : MonoBehaviour
         Debug.Log("GenerateNewQuestion called");
         string prompt = "ネットワークに関する、〇か×で答えられる二者択一形式の問題を1つだけ生成してください。複数の問題は絶対に生成しないでください。以下の形式で厳密に出力してください：\n\n問題: [ここに1つの問題文を入れてください]\n正解: [〇または×]\n解説: [ここに解説を入れてください]";
         chatGPT.MessageSubmit(prompt);
+        timeCounter.ResetTimer();
     }
 }
