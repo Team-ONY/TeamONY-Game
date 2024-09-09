@@ -4,11 +4,13 @@ using TMPro;
 using System.Collections;
 
 public class LoadingManager : MonoBehaviour
-{
+{   
     public GameObject loadingWindow;
+    public GameObject LoadingPanel; // パネルオブジェクト
     public Image progressBarFill;
     public TextMeshProUGUI percentageText;
     public Button closeButton;
+    public Button OkayButton; // ボタンオブジェクト
 
     public float minStepDelay = 0.3f;
     public float maxStepDelay = 1.2f;
@@ -19,12 +21,35 @@ public class LoadingManager : MonoBehaviour
 
     private int dotCount = 0;
     private const int maxDots = 3;
+    private bool isButtonClicked = false; // ボタンがクリックされたかどうかを管理するフラグ
 
     private void Start()
     {
+        LoadingPanel.SetActive(false); // パネルを最初に非表示にする
         closeButton.onClick.AddListener(CloseLoadingWindow);
+        OkayButton.onClick.AddListener(OnOkayButtonClick); // ボタンがクリックされたときの処理を追加
+
+        StartCoroutine(WaitForButtonClick()); // ボタンがクリックされるのを待つコルーチンを開始
+    }
+
+    private void OnOkayButtonClick()
+    {
+        isButtonClicked = true; // フラグをtrueにして、ボタンがクリックされたことを示す
+        LoadingPanel.SetActive(true); // パネルを表示する
+    }
+
+    private IEnumerator WaitForButtonClick()
+    {
+        yield return null; // 1フレーム待機する
+        // ボタンがクリックされるまで待機する
+        yield return new WaitUntil(() => isButtonClicked);
+        
+        // パネルが表示されるのを待つ
+        yield return new WaitForSeconds(0.1f); 
+
+        // ボタンがクリックされたらロード処理を開始
         StartCoroutine(SimulateLoading());
-        StartCoroutine(AnimateDots());
+        StartCoroutine(AnimateDots()); 
     }
 
     private IEnumerator SimulateLoading()
@@ -41,7 +66,7 @@ public class LoadingManager : MonoBehaviour
             yield return new WaitForSeconds(Random.Range(minStepDelay, maxStepDelay));
         }
 
-        UpdateLoadingUI(1f);
+
     }
 
     private void UpdateLoadingUI(float progress)
