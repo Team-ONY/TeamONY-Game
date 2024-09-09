@@ -13,6 +13,7 @@ public class QuizManager : MonoBehaviour
     private string currentQuestion;
     private string currentExplanation;
     public TimeCounter timeCounter;
+    public SoundManager soundManager;
 
     void Start()
     {
@@ -71,6 +72,13 @@ public class QuizManager : MonoBehaviour
             correctCount++;
             GameData.CorrectAnswers = correctCount;
             countText.text = "正解数: " + correctCount.ToString();
+            questionText.text = "正解です！";
+
+            if (soundManager != null)
+            {
+                Debug.Log("PlayCorrectSound called");
+                soundManager.PlayCorrectSound();
+            }
         }
         else
         {
