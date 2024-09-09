@@ -3,9 +3,10 @@ using UnityEngine;
 public class SoundManager : MonoBehaviour
 {
     public static SoundManager Instance;
-    
+
     public AudioClip clickSound;
     private AudioSource audioSource;
+    public AudioClip correctSound;
 
     private void Awake()
     {
@@ -41,6 +42,19 @@ public class SoundManager : MonoBehaviour
         else
         {
             Debug.LogWarning("Click sound is not assigned!");
+        }
+    }
+    public void PlayCorrectSound()
+    {
+        Debug.Log("PlayCorrectSound called");
+        if (correctSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(correctSound);
+            Debug.Log("Correct sound played");
+        }
+        else
+        {
+            Debug.LogWarning("Correct sound is not assigned!");
         }
     }
 }
